@@ -20,8 +20,8 @@ public class GrabPlayerData {
             switch (((SlashCommandInteractionEvent) event).getName()){
                 case "21" -> {
                     User user = ((SlashCommandInteractionEvent) event).getUser();
-                    PLayerData blackjackData = new PLayerData(user);
-                    return blackjackData.getPLayerData();
+                    PlayerData blackjackData = new PlayerData(user);
+                    return blackjackData.playerData();
                 }
                 //more features in the future
             }
@@ -33,15 +33,15 @@ public class GrabPlayerData {
             String s = m.getContentRaw();
 
             User user = ((MessageReceivedEvent) event).getAuthor();
-            PLayerData blackjackData = new PLayerData(user);
-            return blackjackData.getPLayerData();
+            PlayerData blackjackData = new PlayerData(user);
+            return blackjackData.playerData();
 
         }
 
         return null;
     }
     public Player userGameData(User user){
-        PLayerData blackjackData = new PLayerData(user);
-        return blackjackData.getPLayerData();
+        PlayerData blackjackData = new PlayerData(user);
+        return blackjackData.playerData();
     }
 }

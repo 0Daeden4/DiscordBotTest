@@ -1,7 +1,6 @@
 package Games;
 
-import FileManagement.LogBets;
-import FileManagement.PLayerData;
+import FileManagement.PlayerData;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.events.Event;
@@ -17,7 +16,7 @@ import static FileManagement.LogBets.logBets;
 import static Main.Main.betsAndChallenges;
 
 public class RockPaperScissors extends Game{
-    private PLayerData pLayerData;
+    private PlayerData pLayerData;
     private Player player;
     //challenger, challenger, accepted
 
@@ -28,16 +27,16 @@ public class RockPaperScissors extends Game{
     public RockPaperScissors(User InitiatorUser, MessageReceivedEvent event){
         super(InitiatorUser);
 
-        pLayerData = new PLayerData(event.getAuthor());
+        pLayerData = new PlayerData(event.getAuthor());
         this.player = super.getPlayer();
     }
     public RockPaperScissors(User InitiatorUser, Event event) throws UnexpectedException {
         super(InitiatorUser);
 
         if(event.getClass() == ButtonInteractionEvent.class){
-            pLayerData = new PLayerData(((ButtonInteractionEvent) event).getUser());
+            pLayerData = new PlayerData(((ButtonInteractionEvent) event).getUser());
         } else if (event.getClass()== SlashCommandInteractionEvent.class) {
-            pLayerData = new PLayerData(((SlashCommandInteractionEvent)event).getUser());
+            pLayerData = new PlayerData(((SlashCommandInteractionEvent)event).getUser());
         }else{
             throw new UnexpectedException("Invalid event type entered in constructor.");
         }
@@ -75,8 +74,8 @@ public class RockPaperScissors extends Game{
             color = Color.red;
             return stringToEmbed("","",description,color);
         }
-        PLayerData challengedData = new PLayerData(challenged);
-        long challengedBalance =challengedData.getPLayerData().getMoney();
+        PlayerData challengedData = new PlayerData(challenged);
+        long challengedBalance =challengedData.playerData().getMoney();
         long playerBalance = getPlayer().getMoney();
         String challengedId = challenged.getId();
         if(playerBalance-amount<0){
@@ -123,8 +122,8 @@ public class RockPaperScissors extends Game{
     }
 
     public MessageEmbed play(User challenger, long bet){
-        PLayerData challengerData = new PLayerData(challenger); //to load the files
-        Player challengerPLayer = challengerData.getPLayerData();
+        PlayerData challengerData = new PlayerData(challenger); //to load the files
+        Player challengerPLayer = challengerData.playerData();
         long challengerBalance = challengerPLayer.getMoney();
         long challengedBalance = player.getMoney();
         String description;
@@ -170,11 +169,11 @@ public class RockPaperScissors extends Game{
 
     //GETTER AND SETTER
 
-    public PLayerData getpLayerData() {
+    public PlayerData getpLayerData() {
         return pLayerData;
     }
 
-    public void setpLayerData(PLayerData pLayerData) {
+    public void setpLayerData(PlayerData pLayerData) {
         this.pLayerData = pLayerData;
     }
 

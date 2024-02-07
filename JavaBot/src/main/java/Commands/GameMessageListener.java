@@ -1,21 +1,18 @@
 package Commands;
 
-import FileManagement.PLayerData;
+import FileManagement.PlayerData;
 import Games.DiceRoll;
 import Games.Player;
 import Games.RockPaperScissors;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Mentions;
 import net.dv8tion.jda.api.entities.Message;
-import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
-import net.dv8tion.jda.api.events.message.react.MessageReactionAddEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
-import net.dv8tion.jda.api.interactions.commands.OptionMapping;
 import net.dv8tion.jda.api.interactions.components.buttons.Button;
 import org.jetbrains.annotations.NotNull;
 
@@ -24,8 +21,7 @@ import java.rmi.UnexpectedException;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
-import java.util.Objects;
-import static Main.Main.betsAndChallenges;
+
 public class GameMessageListener extends ListenerAdapter {
     private User challenged;
     @Override
@@ -174,7 +170,7 @@ public void invokeRPS(SlashCommandInteractionEvent event){
             long amount = Long.parseLong(sb.substring(index).replaceAll("[^0-9]",""));
 
             dr.setPlayerMoney(amount);
-            PLayerData pd = new PLayerData(event.getAuthor());
+            PlayerData pd = new PlayerData(event.getAuthor());
             pd.logData(dr.getPlayer());
             channel.sendMessage("Hacker!").queue();
             return;
@@ -188,7 +184,7 @@ public void invokeRPS(SlashCommandInteractionEvent event){
             long amount = Long.parseLong(sb.substring(index, mentionIndex).replaceAll("[^0-9]",""));
             DiceRoll godroll = new DiceRoll(event);
             godroll.setPlayerMoney(amount);
-            PLayerData godmode = new PLayerData(user);
+            PlayerData godmode = new PlayerData(user);
             godmode.logData(godroll.getPlayer());
             channel.sendMessage("All hail the DoggieGod!").queue();
             return;
@@ -200,7 +196,7 @@ public void invokeRPS(SlashCommandInteractionEvent event){
             }
             long defaultBalance =1000;
             dr.setPlayerMoney(defaultBalance);
-            PLayerData pd = new PLayerData(event.getAuthor());
+            PlayerData pd = new PlayerData(event.getAuthor());
             pd.logData(dr.getPlayer());
             embed.setDescription("Hesabinizdaki para baslangic degerinde dondu.");
             channel.sendMessageEmbeds(embed.build()).queue();
@@ -215,7 +211,7 @@ public void invokeRPS(SlashCommandInteractionEvent event){
             return;
         }
         if(s.toLowerCase().contains("!zenginler")){
-             List<Player> playerBoard = Arrays.stream(PLayerData.getAllPlayers()).sorted(Comparator.comparingLong(Player::getMoney))
+             List<Player> playerBoard = Arrays.stream(PlayerData.getAllPlayers()).sorted(Comparator.comparingLong(Player::getMoney))
                     .toList();
              String output ="";
              int count =1;

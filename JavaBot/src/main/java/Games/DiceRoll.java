@@ -1,10 +1,7 @@
 package Games;
 
-import FileManagement.PLayerData;
-import net.dv8tion.jda.api.EmbedBuilder;
+import FileManagement.PlayerData;
 import net.dv8tion.jda.api.entities.MessageEmbed;
-import net.dv8tion.jda.api.entities.User;
-import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 
@@ -12,17 +9,17 @@ import java.awt.*;
 import java.util.Random;
 
 public class DiceRoll extends Game{
-    private PLayerData pLayerData;
+    private PlayerData pLayerData;
     private Player player;
 
     public DiceRoll(MessageReceivedEvent messageEvent) {
         super(messageEvent);
-        pLayerData = new PLayerData(messageEvent.getAuthor());
+        pLayerData = new PlayerData(messageEvent.getAuthor());
         player = getPlayer();
     }
     public DiceRoll(SlashCommandInteractionEvent slashEvent){
         super(slashEvent);
-        pLayerData = new PLayerData(slashEvent.getUser());
+        pLayerData = new PlayerData(slashEvent.getUser());
         player = getPlayer();
     }
 
