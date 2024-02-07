@@ -25,7 +25,7 @@ import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
-
+import static Main.Main.betsAndChallenges;
 public class GameMessageListener extends ListenerAdapter {
     private User challenged;
     @Override
@@ -102,7 +102,7 @@ public void invokeRPS(SlashCommandInteractionEvent event){
         event.replyEmbeds(rps.challenge(challenged,amount,event))
                 .addActionRow(
                         Button.success("kabul", "Kabul et"))
-                .queue();
+                .queue(null, exception -> System.out.println("Known bug in Button.success(kabul, Kabul et)"));
     }
 
 }

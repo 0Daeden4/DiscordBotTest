@@ -1,11 +1,9 @@
 package Games;
 
+import FileManagement.LogBets;
 import FileManagement.PLayerData;
-import net.dv8tion.jda.api.EmbedBuilder;
-import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.entities.User;
-import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
 import net.dv8tion.jda.api.events.Event;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent;
@@ -13,9 +11,10 @@ import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 
 import java.awt.*;
 import java.rmi.UnexpectedException;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Random;
+
+import static FileManagement.LogBets.logBets;
+import static Main.Main.betsAndChallenges;
 
 public class RockPaperScissors extends Game{
     private PLayerData pLayerData;
@@ -24,7 +23,7 @@ public class RockPaperScissors extends Game{
 
 
     //challenger, challenged, bet
-    public static List<Bets> betsAndChallenges = new ArrayList<>();
+
 
     public RockPaperScissors(User InitiatorUser, MessageReceivedEvent event){
         super(InitiatorUser);
@@ -96,6 +95,7 @@ public class RockPaperScissors extends Game{
                 +"> kisisini tas kagit makas oynamaya cagiriyor!\n" +
                 "Aktif bahis: **" +amount+"**";
         color = Color.cyan;
+        logBets(betsAndChallenges, "betsAndChallenges");
         return stringToEmbed(title,"",description,color);
     }
     public static boolean checkChallenge(User Challenger, User Challenged){

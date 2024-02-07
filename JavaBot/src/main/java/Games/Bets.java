@@ -1,6 +1,8 @@
 package Games;
 
-public class Bets {
+import java.io.Serializable;
+
+public class Bets implements Serializable {
     private String challengerID;
     private String challengedID;
     private long standingBet;
