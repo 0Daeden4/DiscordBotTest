@@ -11,18 +11,23 @@ import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
+import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.events.message.react.MessageReactionAddEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
+import net.dv8tion.jda.api.interactions.commands.OptionMapping;
+import net.dv8tion.jda.api.interactions.components.buttons.Button;
 import org.jetbrains.annotations.NotNull;
 
 import java.awt.*;
+import java.rmi.UnexpectedException;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
 
 public class GameMessageListener extends ListenerAdapter {
+    private User challenged;
     @Override
     public void onMessageReceived(MessageReceivedEvent event) {
         if(event.getAuthor().isBot()) return;
@@ -31,44 +36,83 @@ public class GameMessageListener extends ListenerAdapter {
         String s = m.getContentRaw();
         MessageChannel channel = m.getChannel();
         utilityCommands(event);
-        invokeRPS(event);
+        //invokeRPS(event);
     }
 
     @Override
     public void onSlashCommandInteraction(@NotNull SlashCommandInteractionEvent event) {
         diceRollSLahCommands(event);
+        invokeRPS(event);
     }
 
-    public void invokeRPS(MessageReceivedEvent event){
-        if(event.getAuthor().isBot()) return;
-        Message m = event.getMessage();
-        String s = m.getContentRaw().toLowerCase();
-        MessageChannel channel = m.getChannel();
-        RockPaperScissors rps = new RockPaperScissors(event.getAuthor(), event);
-        if(s.contains("!tkm ")){
-            Mentions mention  =m.getMentions();
-            User user =mention.getUsers().getFirst();
-            StringBuilder sb = new StringBuilder(s);
-            int index = sb.lastIndexOf("!tkm ");
-            int mentionIndex = sb.indexOf("<@");
-            long amount = Long.parseLong(sb.substring(index, mentionIndex).replaceAll("[^0-9]",""));
-            rps.challenge(user, amount, m);
-            return;
-        }
-        if(s.contains("!kabul et ")){
-            Mentions mention  =m.getMentions();
-            User user =mention.getUsers().getFirst();
-            rps.accept(user, m);
-            return;
+    @Override
+    public void onButtonInteraction(ButtonInteractionEvent event) {
+        if(event.getComponentId().equals("kabul") &&event.getUser().equals(challenged)){
+            try {
+                RockPaperScissors rps = new RockPaperScissors(event.getUser(), event);
+                event.replyEmbeds(rps.accept(event.getMessage().getAuthor(),event.getUser())).queue();
+            } catch (UnexpectedException e) {
+                throw new RuntimeException(e);
+            }
+        }else{
+            event.reply("Duelloya cagirilan kisi siz degilsiniz!").setEphemeral(true).queue();
         }
     }
+
+    //    public void invokeRPS(MessageReceivedEvent event){
+//        if(event.getAuthor().isBot()) return;
+//        Message m = event.getMessage();
+//        String s = m.getContentRaw().toLowerCase();
+//        MessageChannel channel = m.getChannel();
+//        RockPaperScissors rps = new RockPaperScissors(event.getAuthor(), event);
+//        if(s.contains("!tkm ")){
+//            Mentions mention  =m.getMentions();
+//            User user =mention.getUsers().getFirst();
+//            StringBuilder sb = new StringBuilder(s);
+//            int index = sb.lastIndexOf("!tkm ");
+//            int mentionIndex = sb.indexOf("<@");
+//            long amount = Long.parseLong(sb.substring(index, mentionIndex).replaceAll("[^0-9]",""));
+//            rps.challenge(user, amount, m);
+//            return;
+//        }
+//        if(s.contains("!kabul et ")){
+//            Mentions mention  =m.getMentions();
+//            User user =mention.getUsers().getFirst();
+//            rps.accept(user, m);
+//            return;
+//        }
+//    }
+public void invokeRPS(SlashCommandInteractionEvent event){
+    if(!event.getName().equals("tkm")) return;
+    RockPaperScissors rps = null;
+    try {
+        rps = new RockPaperScissors(event.getUser(), event);
+    } catch (UnexpectedException e) {
+        throw new RuntimeException(e);
+    }
+    challenged = event.getOption("kisi").getAsUser();
+
+    long amount = event.getOption("miktar").getAsLong();
+    if(challenged.isBot()){
+        event.reply("Botu duelloya cagiramazsiniz!").setEphemeral(true).queue();
+
+    } else if(challenged== event.getUser()){
+        event.reply("Kendinizi duelloya cagiramazsiniz!").setEphemeral(true).queue();
+    }else{
+        event.replyEmbeds(rps.challenge(challenged,amount,event))
+                .addActionRow(
+                        Button.success("kabul", "Kabul et"))
+                .queue();
+    }
+
+}
     public void diceRollSLahCommands(SlashCommandInteractionEvent event){
-        if(!event.getName().equals("Zar")) return;
+        if(!event.getName().equals("zar")) return;
         MessageChannel channel = event.getChannel();
         DiceRoll dr = new DiceRoll(event);
         long balance = dr.getBalance();
         EmbedBuilder eb = new EmbedBuilder();
-        int amount = event.getOption("miktar").getAsInt(); //this is a field which is mandatory to fill
+        long amount = event.getOption("miktar").getAsLong();//this is a field which is mandatory to fill
         event.replyEmbeds(dr.rollDices(amount)).queue();
 //        if(s.toLowerCase().contains("!para yolla ")){
 //            Mentions mention  =m.getMentions();
@@ -101,6 +145,7 @@ public class GameMessageListener extends ListenerAdapter {
 //            return;
 //        }
     }
+
     public void utilityCommands(MessageReceivedEvent event){
         if(event.getAuthor().isBot()) return;
         Message m = event.getMessage();

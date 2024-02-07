@@ -13,10 +13,9 @@ import java.util.List;
 public class PLayerData {
     private Player playerData = null;
     private File logFilePath;
-
     public PLayerData(User user){
         File logDirectory = new File(Paths.get("").toAbsolutePath()+File.separator +"PlayerDatas"); //Creates a log file inside the PlayerData directory named after the gameName
-        logFilePath = new File(logDirectory.getAbsolutePath()+File.separatorChar+user.getId()+".xml");
+        logFilePath = new File(logDirectory.getAbsolutePath()+File.separatorChar+user.getId()+".ser");
 
 
         if(logFilePath.exists()){ // Import logDirectory file
